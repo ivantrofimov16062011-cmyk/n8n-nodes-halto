@@ -1,0 +1,58 @@
+{
+  "name": "n8n-nodes-halto",
+  "version": "0.2.1",
+  "description": "Halto for n8n: keep customer data away from your AI agent and check every risky action before it runs \u2014 Allowed, Needs approval or Blocked.",
+  "keywords": [
+    "n8n-community-node-package",
+    "halto",
+    "ai agent",
+    "guardrails",
+    "approval",
+    "prompt injection"
+  ],
+  "license": "MIT",
+  "homepage": "https://www.halto.tech",
+  "author": {
+    "name": "Halto Labs",
+    "email": "team@halto.tech"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivantrofimov16062011-cmyk/n8n-nodes-halto.git"
+  },
+  "main": "index.js",
+  "files": [
+    "dist",
+    "index.js",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.build.json && node scripts/copy-icons.mjs",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "lint": "n8n-node lint"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/HaltoApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Halto/Halto.node.js",
+      "dist/nodes/HaltoProtect/HaltoProtect.node.js",
+      "dist/nodes/HaltoTrigger/HaltoTrigger.node.js"
+    ]
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "0.50.3",
+    "@types/node": "^22.19.0",
+    "eslint": "9.29.0",
+    "n8n-workflow": "2.41.0",
+    "typescript": "^5.9.3",
+    "vitest": "4.1.11"
+  }
+}

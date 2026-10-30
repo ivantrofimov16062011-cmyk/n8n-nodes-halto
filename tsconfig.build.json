@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  // n8n loads the compiled .js only; type declarations in the package fail n8n's scanner (file name rules).
+  "compilerOptions": { "declaration": false },
+  "include": ["credentials", "nodes"]
+}

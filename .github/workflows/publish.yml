@@ -1,0 +1,36 @@
+# Runs in the public repository github.com/ivantrofimov16062011-cmyk/n8n-nodes-halto (not in Halto's own repository,
+# where this file is only kept): a version tag (e.g. 0.2.1) tests, lints and publishes the package to npm with a
+# provenance statement, which n8n requires for verified community nodes. npm trusts this workflow through Trusted
+# Publishing (npmjs.com → the package → Settings → Trusted Publisher → GitHub Actions, workflow publish.yml), so no
+# npm token is stored anywhere.
+name: Publish
+
+on:
+  push:
+    tags: ["*.*.*"]
+
+permissions: {}
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # the OIDC token npm checks for Trusted Publishing and provenance
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - name: The tag is the package's version
+        run: test "$(node -p 'require("./package.json").version')" = "$GITHUB_REF_NAME"
+      # Trusted Publishing needs npm 11.5.1 or later.
+      - run: npm install -g npm@11.6.2
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npm publish --provenance --access public
