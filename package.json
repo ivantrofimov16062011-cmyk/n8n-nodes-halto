@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-halto",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Halto for n8n: keep customer data away from your AI agent and check every risky action before it runs \u2014 Allowed, Needs approval or Blocked.",
   "keywords": [
     "n8n-community-node-package",

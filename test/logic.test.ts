@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { describe, expect, it } from "vitest";
-import { checkAndMaybeWait, checkBody, parseParams, protectBody, resultForModel, checkBaseUrl, type Json, type Requester } from "../nodes/Halto/logic";
+import { checkAndMaybeWait, checkBody, outputFor, parseParams, protectBody, resultForModel, checkBaseUrl, type Json, type Requester } from "../nodes/Halto/logic";
 import { isFreshDelivery, MAX_DELIVERY_AGE_MS, RecentDeliveries, verifySignature } from "../nodes/HaltoTrigger/signature";
 
 const input = { tool: "gmail", action: "send_email", params: { to: "guest@example.com" }, sessionId: "n8n-1", contentSources: [{ type: "email", origin: "guest@example.com", content: "Hi!" }] };
@@ -159,5 +159,14 @@ describe("data guard in n8n", () => {
     const forModel = resultForModel(result);
     expect(forModel).toEqual({ decision: "allow", reason: "Allowed by rule", action_id: "act-1", risk: { score: 10, level: "low" }, approval: { status: "approved", decided_by: "Ivan" } });
     expect(JSON.stringify(forModel)).not.toMatch(/maria|Georgiou/i);
+  });
+});
+
+describe("outputFor", () => {
+  it("keeps the three outputs in a workflow, and sends every decision to the first one for an AI Agent's tool", () => {
+    // 0 Allowed, 1 Needs approval, 2 Blocked.
+    expect([0, 1, 2].map((o) => outputFor(o, false))).toEqual([0, 1, 2]);
+    // n8n gives a tool's model the first output only: "needs approval" and "blocked" must reach it too.
+    expect([0, 1, 2].map((o) => outputFor(o, true))).toEqual([0, 0, 0]);
   });
 });

@@ -126,6 +126,15 @@ export function protectBody(input: ProtectInput): Record<string, unknown> {
 const FOR_MODEL = ["decision", "reason", "action_id", "approval_id", "approval_expires_at", "risk", "category", "session_tainted"];
 
 /**
+ * Which output an item leaves by. In a workflow, Allowed, Needs approval and Blocked each have their own; called by an
+ * AI Agent as a tool, n8n hands the model the first output only, so every decision goes there (the answer says which):
+ * otherwise "needs approval" and "blocked" reached the agent as an empty answer.
+ */
+export function outputFor(decisionOutput: number, toolMode: boolean): number {
+  return toolMode ? 0 : decisionOutput;
+}
+
+/**
  * What an AI Agent gets back when it calls Halto Check as a tool: the decision and why. Never `final_params` (the real
  * values behind placeholders, meant for the tool only) or Halto Fix's texts: they would reach the AI's model.
  */

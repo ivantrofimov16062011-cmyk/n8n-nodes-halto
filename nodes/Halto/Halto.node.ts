@@ -10,7 +10,7 @@ import {
   type INodeTypeDescription,
   type JsonObject,
 } from "n8n-workflow";
-import { checkAndMaybeWait, checkBaseUrl, parseParams, resultForModel, type Requester } from "./logic";
+import { checkAndMaybeWait, checkBaseUrl, outputFor, parseParams, resultForModel, type Requester } from "./logic";
 
 /**
  * "Halto Check": put it right before a risky node (send email, refund, delete…). Items leave through
@@ -161,11 +161,11 @@ export class Halto implements INodeType {
           },
           { waitMinutes: this.getNodeParameter("waitMinutes", i, 0) as number },
         );
-        outputs[output]!.push({ json: { ...items[i]!.json, halto: (toolMode ? resultForModel(result) : result) as IDataObject }, pairedItem: { item: i } });
+        outputs[outputFor(output, toolMode)]!.push({ json: { ...items[i]!.json, halto: (toolMode ? resultForModel(result) : result) as IDataObject }, pairedItem: { item: i } });
       } catch (err) {
         if (this.continueOnFail()) {
           // Fail closed: an error never lets the action through.
-          outputs[2]!.push({ json: { ...items[i]!.json, halto: { decision: "block", reason: (err as Error).message } }, pairedItem: { item: i } });
+          outputs[outputFor(2, toolMode)]!.push({ json: { ...items[i]!.json, halto: { decision: "block", reason: (err as Error).message } }, pairedItem: { item: i } });
           continue;
         }
         // An existing NodeOperationError passes through unchanged; an API error keeps its messages.
